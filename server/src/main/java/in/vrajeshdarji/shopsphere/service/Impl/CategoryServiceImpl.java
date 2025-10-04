@@ -4,6 +4,7 @@ import in.vrajeshdarji.shopsphere.entity.CategoryEntity;
 import in.vrajeshdarji.shopsphere.io.CategoryRequest;
 import in.vrajeshdarji.shopsphere.io.CategoryResponse;
 import in.vrajeshdarji.shopsphere.repository.CategoryRepository;
+import in.vrajeshdarji.shopsphere.repository.ItemRepository;
 import in.vrajeshdarji.shopsphere.service.CategoryService;
 import in.vrajeshdarji.shopsphere.service.FileUploadService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final FileUploadService fileUploadService;
+    private final ItemRepository itemRepository;
 
     @Override
     public CategoryResponse add(CategoryRequest request, MultipartFile file) {
@@ -49,6 +51,8 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private CategoryResponse convertToResponse(CategoryEntity newCategory) {
+        Integer itemsCount = itemRepository.countByCategoryId(newCategory.getId());
+
         return CategoryResponse.builder()
                 .categoryId(newCategory.getCategoryId())
                 .name(newCategory.getName())
@@ -57,6 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .imgUrl(newCategory.getImgUrl())
                 .createdAt(newCategory.getCreatedAt())
                 .updatedAt(newCategory.getUpdateAt())
+                .items(itemsCount)
                 .build();
     }
 

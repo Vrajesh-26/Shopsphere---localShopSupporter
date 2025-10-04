@@ -27,7 +27,8 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryResponse addCategory(@RequestPart("category") String categoryString,
                                         @RequestPart("file") MultipartFile file){
-        ObjectMapper objectMapper = new ObjectMapper();
+
+        ObjectMapper objectMapper = new ObjectMapper();  // Deserialize (parse JSON into Java object) or Serialize (convert object into JSON string)
         CategoryRequest request = null;
         try{
             request = objectMapper.readValue(categoryString, CategoryRequest.class);
