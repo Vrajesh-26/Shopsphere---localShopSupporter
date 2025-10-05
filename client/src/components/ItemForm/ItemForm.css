@@ -1,0 +1,17 @@
+.item-form-container::-webkit-scrollbar {
+  width: 8px;
+}
+.item-form-container::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+.item-form-container::-webkit-scrollbar-thumb {
+  background: #3b3b3b;
+  border-radius: 10px;
+}
+.item-form-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+.item-form-container {
+  scrollbar-width: thin;
+  scrollbar-color: #3b3b3b #1f1f1f;
+}
