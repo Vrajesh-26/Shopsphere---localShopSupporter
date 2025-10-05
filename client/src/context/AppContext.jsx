@@ -6,8 +6,6 @@ export const AppContext = createContext(null);
 export const AppContextProvider = (props) => {
 
     const [categories, setCategories] = useState([]);
-
-
     //set authenticaion credential 
     const [auth, setAuth] = useState({token: null, role: null});
     
