@@ -8,16 +8,17 @@ import { AppContext } from '../../context/AppContext';
 const Login = () => {
 
     const {setAuthData} = useContext(AppContext);
+    const navigate = useNavigate();
+
     // Loading states 
     const [loading, setLoading] = useState(false);
-    //Set data 
+    //Set data  f
     const [data, setData] = useState({
         email: "",
         password: ""
     });
 
     const onChangeHandler = (e) => {
-        const navigate = useNavigate();
         const name = e.target.name;
         const value = e.target.value;
         setData((data) => ({...data, [name]: value}));
@@ -71,8 +72,8 @@ const Login = () => {
                             </div>
 
                             <div className="d-grid">
-                                <button type="submit" className="btn btn-dark btn-lg">
-                                    Sign in
+                                <button type="submit" className="btn btn-dark btn-lg" disabled={loading}>
+                                    {loading ? "Loading..." : "Sign in"}
                                 </button>
                             </div>
                         </form>
