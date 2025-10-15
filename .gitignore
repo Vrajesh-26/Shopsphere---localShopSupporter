@@ -20,6 +20,10 @@ target/
 .sts4-cache
 *.yml
 *.log
+# Sensitive files
+src/main/resources/application.properties
+src/main/resources/application.yml
+.env
 
 ### IntelliJ IDEA ###
 .idea
