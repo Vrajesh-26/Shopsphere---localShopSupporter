@@ -37,6 +37,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
         try{
             Map<String, Object> uploadOptions = ObjectUtils.asMap(
+//TODO : DO CHANGE HERE
                     "public_id", publicId,
                     "resource_type", "image"
             );
