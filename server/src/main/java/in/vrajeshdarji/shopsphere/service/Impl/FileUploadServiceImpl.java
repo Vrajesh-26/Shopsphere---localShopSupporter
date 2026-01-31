@@ -33,16 +33,15 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
 
         String uniqueFileName = UUID.randomUUID().toString();
-        String publicId = "shopsphere/uploads/" + uniqueFileName;
 
         try{
             Map<String, Object> uploadOptions = ObjectUtils.asMap(
-//TODO : DO CHANGE HERE
-                    "public_id", publicId,
+                    "folder", "shopsphere/uploads",
+                    "public_id", uniqueFileName,
                     "resource_type", "image"
             );
-            // it return file from cloudinary
-            Map result = cloudinary.uploader().upload(file.getBytes(), uploadOptions);
+            // it returns file from cloudinary
+            Map result = cloudinary.uploader().upload(file.getInputStream(), uploadOptions);
 
             if(result.containsKey("secure_url")){
                 return result.get("secure_url").toString();
@@ -75,17 +74,17 @@ public class FileUploadServiceImpl implements FileUploadService {
         }
     }
 
-    private String getPublicIdFromUrl(String url){
+    private String getPublicIdFromUrl(String imgUrl){
         try{
-            int startIndex = url.indexOf("/upload/") + "/upload/".length();
-            startIndex = url.indexOf('/', startIndex) + 1;
-            int endIndex = url.lastIndexOf('.');
+            int startIndex = imgUrl.indexOf("/upload/") + "/upload/".length();
+            startIndex = imgUrl.indexOf('/', startIndex) + 1;
+            int endIndex = imgUrl.lastIndexOf('.');
 
             if(startIndex > 0 && endIndex > startIndex){
-                return url.substring(startIndex, endIndex);
+                return imgUrl.substring(startIndex, endIndex);
             }
         }catch (Exception e){
-            System.err.println("Error parsing public_id from URL: " + url);
+            System.err.println("Error parsing public_id from URL: " + imgUrl);
         }
 
         return null;
