@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ItemServiceImp implements ItemService {
+public class ItemServiceImpl implements ItemService {
 
     private final FileUploadService fileUploadService;
     private final CategoryRepository categoryRepository;
