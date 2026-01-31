@@ -1,12 +1,11 @@
 package in.vrajeshdarji.shopsphere.service.Impl;
 
+import com.razorpay.Order;
 import in.vrajeshdarji.shopsphere.entity.OrderEntity;
 import in.vrajeshdarji.shopsphere.entity.OrderItemEntity;
-import in.vrajeshdarji.shopsphere.io.OrderRequest;
-import in.vrajeshdarji.shopsphere.io.OrderResponse;
-import in.vrajeshdarji.shopsphere.io.PaymentDetails;
-import in.vrajeshdarji.shopsphere.io.PaymentMethod;
+import in.vrajeshdarji.shopsphere.io.*;
 import in.vrajeshdarji.shopsphere.repository.OrderEntityRepository;
+import in.vrajeshdarji.shopsphere.repository.OrderItemEntityRepository;
 import in.vrajeshdarji.shopsphere.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImp implements OrderService {
-
+public class OrderServiceImpl implements OrderService {
 
     private final OrderEntityRepository orderEntityRepository;
 
@@ -28,25 +26,41 @@ public class OrderServiceImp implements OrderService {
         PaymentDetails paymentDetails = new PaymentDetails();
         paymentDetails.setStatus(newOrder.getPaymentMethod() == PaymentMethod.CASH ?
                 PaymentDetails.PaymentStatus.COMPLETED : PaymentDetails.PaymentStatus.PENDING);
-
         newOrder.setPaymentDetails(paymentDetails);
 
         List<OrderItemEntity> orderItems = request.getCartItems().stream()
-                .map(this::convertToOrderItemEntity)
+                .map(this:: convertToOrderItemEntity)
                 .collect(Collectors.toList());
         newOrder.setItems(orderItems);
 
         newOrder = orderEntityRepository.save(newOrder);
         return convertToResponse(newOrder);
+
+
+
     }
 
     private OrderItemEntity convertToOrderItemEntity(OrderRequest.OrderItemRequest orderItemRequest) {
-        return  OrderItemEntity.builder()
+         return OrderItemEntity.builder()
                 .itemId(orderItemRequest.getItemId())
                 .name(orderItemRequest.getName())
                 .price(orderItemRequest.getPrice())
                 .quantity(orderItemRequest.getQuantity())
                 .build();
+
+
+    }
+
+    private OrderEntity convertToOrderEntity(OrderRequest request) {
+        return OrderEntity.builder()
+                .customerName(request.getCustomerName())
+                .phoneNumber(request.getPhoneNumber())
+                .subTotal(request.getSubtotal())
+                .tax(request.getTax())
+                .grandTotal(request.getGrandTotal())
+                .paymentMethod(PaymentMethod.valueOf(request.getPaymentMethod()))
+                .build();
+
     }
 
     private OrderResponse convertToResponse(OrderEntity newOrder) {
@@ -54,14 +68,14 @@ public class OrderServiceImp implements OrderService {
                 .orderId(newOrder.getOrderId())
                 .customerName(newOrder.getCustomerName())
                 .phoneNumber(newOrder.getPhoneNumber())
-                .subtotal(newOrder.getSubtotal())
+                .subtotal(newOrder.getSubTotal())
                 .tax(newOrder.getTax())
                 .grandTotal(newOrder.getGrandTotal())
                 .paymentMethod(newOrder.getPaymentMethod())
                 .items(newOrder.getItems().stream()
                         .map(this::convertToItemResponse)
                         .collect(Collectors.toList()))
-                .paymentDetails((newOrder.getPaymentDetails()))
+                .paymentDetails(newOrder.getPaymentDetails())
                 .createdAt(newOrder.getCreatedAt())
                 .build();
     }
@@ -75,30 +89,44 @@ public class OrderServiceImp implements OrderService {
                 .build();
     }
 
-    private OrderEntity convertToOrderEntity(OrderRequest request) {
-        return OrderEntity.builder()
-                .customerName(request.getCustomerName())
-                .phoneNumber(request.getPhoneNumber())
-                .subtotal(request.getSubtotal())
-                .tax(request.getTax())
-                .grandTotal(request.getGrandTotal())
-                .paymentMethod(PaymentMethod.valueOf(request.getPaymentMethod()))
-                .build();
-    }
-
-
     @Override
     public void deleteOrder(String orderId) {
-        OrderEntity existingOrder = orderEntityRepository.findByOrderId(orderId)
+       OrderEntity existingOrder = orderEntityRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
-        orderEntityRepository.delete(existingOrder);
+       orderEntityRepository.delete(existingOrder);
     }
 
     @Override
-    public List<OrderResponse> getLatestOrders() {
+    public List<OrderResponse> getLatestOrder() {
         return orderEntityRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public OrderResponse VerifyPayment(PaymentVerificationRequest request) {
+        OrderEntity existingOrder = orderEntityRepository.findByOrderId(request.getOrderId())
+                .orElseThrow(()-> new RuntimeException("Order not found"));
+        if(!verifyRazorpaySignature(request.getRazorpayOrderId(),
+                request.getRazorpayPaymentId(),
+                request.getRazorpaySignature())){
+            throw  new RuntimeException("Payment verification failed");
+
+        }
+
+        PaymentDetails paymentDetails = existingOrder.getPaymentDetails();
+        paymentDetails.setRazorpayOrderId(request.getRazorpayOrderId());
+        paymentDetails.setRazorpayPaymentId(request.getRazorpayPaymentId());
+        paymentDetails.setStatus(PaymentDetails.PaymentStatus.COMPLETED);
+
+        existingOrder = orderEntityRepository.save(existingOrder);
+        return convertToResponse(existingOrder);
+
+    }
+
+    private boolean verifyRazorpaySignature(String razorpayOrderId, String razorpayPaymentId, String razorpaySignature) {
+        return true;
+    }
+
 }

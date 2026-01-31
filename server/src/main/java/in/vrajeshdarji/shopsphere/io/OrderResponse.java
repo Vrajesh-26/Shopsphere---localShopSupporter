@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class OrderResponse {
+
     private String orderId;
     private String customerName;
     private String phoneNumber;
@@ -33,5 +34,6 @@ public class OrderResponse {
         private String name;
         private Double price;
         private Integer quantity;
+
     }
 }

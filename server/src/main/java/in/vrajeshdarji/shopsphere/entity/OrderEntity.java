@@ -18,21 +18,21 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderEntity {
 
+public class OrderEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderId;
     private String customerName;
     private String phoneNumber;
-    private Double subtotal;
+    private Double subTotal;
     private Double tax;
     private Double grandTotal;
     private LocalDateTime createdAt;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true )
+    @JoinColumn(name = "order_id" )
     private List<OrderItemEntity> items = new ArrayList<>();
 
     @Embedded
@@ -43,7 +43,13 @@ public class OrderEntity {
 
     @PrePersist
     protected void onCreate(){
-        this.orderId = "ORD"+System.currentTimeMillis();
+        this.orderId = "ORD" +System.currentTimeMillis();
         this.createdAt = LocalDateTime.now();
+
+
     }
+
+
+
+
 }

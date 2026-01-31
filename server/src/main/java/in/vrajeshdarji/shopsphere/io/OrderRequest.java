@@ -24,11 +24,12 @@ public class OrderRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Builder
     public static class OrderItemRequest{
         private String itemId;
         private String name;
         private Double price;
         private Integer quantity;
+
     }
+
 }

@@ -20,15 +20,17 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@RequestBody OrderRequest request){
         return orderService.createOrder(request);
-    }
 
+    }
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{orderId}")
     public void deleteOrder(@PathVariable String orderId){
         orderService.deleteOrder(orderId);
-    }
 
-    public List<OrderResponse> getLatestOrder(){
-        return orderService.getLatestOrders();
+    }
+    @GetMapping("/latest")
+    public List<OrderResponse> getLatestOrders(){
+        return orderService.getLatestOrder();
+
     }
 }
